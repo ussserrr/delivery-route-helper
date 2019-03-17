@@ -1,0 +1,29 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryRoute", "DeliveryRoute\DeliveryRoute.csproj", "{A1ACB786-7055-4BC4-8F9F-93ED6043ADE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryRouteHelper", "DeliveryRouteHelper\DeliveryRouteHelper.csproj", "{2311F8AA-FC64-47EC-89AF-C608AB970313}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryRouteHelper.Tests", "DeliveryRouteHelper.Tests\DeliveryRouteHelper.Tests.csproj", "{FE4FAC31-4594-42E1-A3C1-1BA870AB7219}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1ACB786-7055-4BC4-8F9F-93ED6043ADE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1ACB786-7055-4BC4-8F9F-93ED6043ADE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1ACB786-7055-4BC4-8F9F-93ED6043ADE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1ACB786-7055-4BC4-8F9F-93ED6043ADE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2311F8AA-FC64-47EC-89AF-C608AB970313}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2311F8AA-FC64-47EC-89AF-C608AB970313}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2311F8AA-FC64-47EC-89AF-C608AB970313}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2311F8AA-FC64-47EC-89AF-C608AB970313}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE4FAC31-4594-42E1-A3C1-1BA870AB7219}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE4FAC31-4594-42E1-A3C1-1BA870AB7219}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE4FAC31-4594-42E1-A3C1-1BA870AB7219}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE4FAC31-4594-42E1-A3C1-1BA870AB7219}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
