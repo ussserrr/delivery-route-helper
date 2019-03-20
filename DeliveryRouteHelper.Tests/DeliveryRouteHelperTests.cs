@@ -132,7 +132,7 @@ namespace DeliveryRouteHelper.Tests
             route.Arrange();
 
             LinkedList<Segment> output = new LinkedList<Segment>();
-            foreach (Segment segment in route.GetRouteEnumerator())  //TODO: !!!
+            foreach (Segment segment in route)
             {
                 output.AddLast(new Segment(segment));
             }
@@ -148,7 +148,7 @@ namespace DeliveryRouteHelper.Tests
             route.Reverse();
 
             LinkedList<Segment> output = new LinkedList<Segment>();
-            foreach (Segment segment in route.GetRouteEnumerator())  //TODO: !!!
+            foreach (Segment segment in route)
             {
                 output.AddLast(new Segment(segment));
             }

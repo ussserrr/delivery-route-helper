@@ -8,4 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DeliveryRouteHelper\DeliveryRouteHelper.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.5.11" />
+  </ItemGroup>
 </Project>

@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 using DeliveryRouteHelper;
-
+using NLog;
 
 namespace DeliveryRoute
 {
     class DeliveryRoute
     {
+        private static Logger logger;
+
         static void Main(string[] args)
         {
+            var nlogconfig = new NLog.Config.LoggingConfiguration();
+            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+            nlogconfig.AddRule(LogLevel.Trace, LogLevel.Fatal, logconsole);
+            LogManager.Configuration = nlogconfig;
+            logger = LogManager.GetCurrentClassLogger();
+
             string[][] LondonAreas =
             {
                 new string[] { "Теддингтон", "Ноттинг-Хилл" },
@@ -36,71 +44,67 @@ namespace DeliveryRoute
                 new byte[][] {Encoding.UTF8.GetBytes("Тосима"), Encoding.UTF8.GetBytes("Кото")},
                 new byte[][] {Encoding.UTF8.GetBytes("Итабаси"), Encoding.UTF8.GetBytes("Бункё")}
             };
-            //HashSet<string[]> m = new HashSet<string[]>(LondonAreas);
-            //foreach (string[] s in m)
-            //{
-            //    Console.WriteLine("{0}, {1}", s[0], s[1]);
-            //}
-            //return;
 
             Route route = new Route("Лондон");
-
-            //IEnumerator<Segment> computedRoute = route.GetRouteEnumerator();
-            //computedRoute.MoveNext();
-            //Console.WriteLine(computedRoute.Current);
-
-            //try
-            //{
-                //route.AcceptData(LondonAreas);
-            //}
-            //catch (InvalidSegmentException ex)
-            //{
-            //    Console.WriteLine("Cannot feed input");
-            //    Console.WriteLine(ex);
-            //    return;
-            //}
-            //try
-            //{
-            //    route.Arrange();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex);
-            //    return;
-            //}
-            //Console.WriteLine(route);
-            //route.Reverse();
-            //Console.WriteLine(route);
+            try
+            {
+                route.AcceptData(LondonAreas);
+                logger.Info($"Data {LondonAreas.GetType()} {nameof(LondonAreas)} is accepted");
+            }
+            catch (InvalidSegmentException ex)
+            {
+                logger.Error($"Cannot feed input {LondonAreas.GetType()} {nameof(LondonAreas)}: {ex}");
+                return;
+            }
+            try
+            {
+                route.Arrange();
+                logger.Info($"Segments {LondonAreas.GetType()} {nameof(LondonAreas)} were arranged successfully");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Cannot arrange {LondonAreas.GetType()} {nameof(LondonAreas)}: {ex}");
+                return;
+            }
+            Console.WriteLine(route);
             route.Reset();
 
-            //route.Name = "Токио";
-            route.AcceptData(LondonAreas);
-            route.Arrange();
+            route.Name = "Токио";
+            try
+            {
+                route.AcceptData(TokyoWards);
+                logger.Info($"Data {TokyoWards.GetType()} {nameof(TokyoWards)} is accepted");
+            }
+            catch (InvalidSegmentException ex)
+            {
+                logger.Error($"Cannot feed input {TokyoWards.GetType()} {nameof(TokyoWards)}: {ex}");
+                return;
+            }
+            try
+            {
+                route.Arrange();
+                logger.Info($"Segments {TokyoWards.GetType()} {nameof(TokyoWards)} were arranged successfully");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Cannot arrange {TokyoWards.GetType()} {nameof(TokyoWards)}: {ex}");
+                return;
+            }
             Console.WriteLine(route);
+
+            Console.WriteLine("You can reverse the route:");
             route.Reverse();
             Console.WriteLine(route);
-            route.Reset();
 
-            //List<MyClass> list = new List<MyClass>();
-            //list.Add(new MyClass(5));
-            //Console.WriteLine(list[0].Value);
-            //list[0].Method();
-            //Console.WriteLine(list[0].Value);
+            Console.WriteLine($"You can use Enumerator to fetch the segments one by one continuously:");
+            IEnumerator<Segment> routeEnumerator = route.GetEnumerator();
+            routeEnumerator.MoveNext();
+            Console.WriteLine(routeEnumerator.Current);
+            routeEnumerator.MoveNext();
+            Console.WriteLine(routeEnumerator.Current);
+            routeEnumerator.MoveNext();
+            Console.WriteLine(routeEnumerator.Current);
+            Console.WriteLine("or to extract the resulted route as a whole");
         }
-
-        //class MyClass
-        //{
-        //    public int Value;
-
-        //    public MyClass(int value)
-        //    {
-        //        Value = value;
-        //    }
-
-        //    public void Method()
-        //    {
-        //        Value += 10;
-        //    }
-        //}
     }
 }

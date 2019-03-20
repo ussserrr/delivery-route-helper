@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -60,24 +61,29 @@ namespace DeliveryRouteHelper
     public class Segment : IEquatable<Segment>
     {
         public Point Start, End;
+
         public Segment(Point start, Point end)
         {
             Start = start;
             End = end;
         }
+
         public Segment(Segment segment)
         {
             Start = Point.Copy(segment.Start);
             End = Point.Copy(segment.End);
         }
+
         public static Segment Copy(Segment other)
         {
             return new Segment(other);
         }
+
         public override string ToString()
         {
             return String.Format("{0} → {1}", Start.Name, End.Name);
         }
+
         public void Reverse()
         {
             var tmp = Start;
@@ -125,7 +131,7 @@ namespace DeliveryRouteHelper
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
-    public class Route
+    public class Route : IEnumerable<Segment>
     {
         public string Name { get; set; }
         public bool DataAccepted
@@ -153,6 +159,7 @@ namespace DeliveryRouteHelper
             route = new LinkedList<Segment>();
             segmentsSet = new HashSet<Segment>();
         }
+
         public Route(): this("Unnamed") { }
 
         public void AcceptData(string[][] rawInput)
@@ -180,6 +187,7 @@ namespace DeliveryRouteHelper
                 throw new EmptyInputException($"Input {rawInput.GetType()} is empty");
             }
         }
+
         public void AcceptData(byte[][][] rawInput)
         {
             if (rawInput.Length != 0)
@@ -228,54 +236,43 @@ namespace DeliveryRouteHelper
                     notChained.Add(enumerator.Current);
                 }
 
-                int chainedLengthPrev = chained.Count;
-                int chainedLength = chainedLengthPrev;
+                int chainedCountPrev = chained.Count;
 
                 while (true)
                 {
+                    // O(N), but N is decreasing on each 'while' step (arithmetic progression from (N-1) to 1)
                     notChained.RemoveWhere((Segment segment) =>
                     {
-                        if (segment.Start == chained.Last.Value.End)
+                        if (segment.Start == chained.Last.Value.End)  // O(1)
                         {
-                            chained.AddLast(segment);
+                            chained.AddLast(segment);  // O(1)
                             return true;
                         }
-                        if (segment.End == chained.First.Value.Start)
+                        if (segment.End == chained.First.Value.Start)  // O(1)
                         {
-                            chained.AddFirst(segment);
+                            chained.AddFirst(segment);  // O(1)
                             return true;
                         }
                         return false;
                     });
 
-                    chainedLength = chained.Count;
-
-                    if (notChained.Count == 0)
+                    if (notChained.Count == 0)  // O(1)
                     {
-                        route = chained;
+                        route = chained;  // Assume O(1) as LinkedList<T> is a reference type
                         return;
                     }
 
-                    if (chainedLength == chainedLengthPrev)
+                    if (chained.Count == chainedCountPrev)  // O(1)
                     {
                         route.Clear();
                         throw new DisruptedRouteException("Cannot arrange segments into route");
                     }
 
-                    chainedLengthPrev = chainedLength;
+                    chainedCountPrev = chained.Count;
                 }
             }
 
             throw new EmptyInputException("Input is empty. Use appropriate AcceptData() overload to provide it first");
-        }
-
-        //TODO: look Sublime
-        public IEnumerable<Segment> GetRouteEnumerator()
-        {
-            foreach (Segment segment in route)
-            {
-                yield return segment;
-            }
         }
 
         public override string ToString()
@@ -287,6 +284,7 @@ namespace DeliveryRouteHelper
             Console.SetOut(stdout);
             return tmpout.ToString();
         }
+
         public void Display()
         {
             Console.WriteLine($"Route \"{Name}\":");
@@ -324,6 +322,16 @@ namespace DeliveryRouteHelper
             List<Segment> tmp = new List<Segment>(route);
             tmp.Reverse();
             route = new LinkedList<Segment>(tmp);
+        }
+
+        public IEnumerator<Segment> GetEnumerator()
+        {
+            return route.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return route.GetEnumerator();
         }
     }
 }
