@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DeliveryRouteHelper;
+
 using NLog;
+
+using DeliveryRouteHelper;
+
 
 namespace DeliveryRoute
 {
@@ -12,6 +15,7 @@ namespace DeliveryRoute
 
         static void Main(string[] args)
         {
+            // Use a logging library to easily manage a program output for different configurations
             var nlogconfig = new NLog.Config.LoggingConfiguration();
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
             nlogconfig.AddRule(LogLevel.Trace, LogLevel.Fatal, logconsole);
@@ -45,6 +49,8 @@ namespace DeliveryRoute
                 new byte[][] {Encoding.UTF8.GetBytes("Итабаси"), Encoding.UTF8.GetBytes("Бункё")}
             };
 
+
+            // =============== London ===============
             Route route = new Route("Лондон");
             try
             {
@@ -69,6 +75,8 @@ namespace DeliveryRoute
             Console.WriteLine(route);
             route.Reset();
 
+
+            // =============== Tokyo ===============
             route.Name = "Токио";
             try
             {
@@ -92,11 +100,13 @@ namespace DeliveryRoute
             }
             Console.WriteLine(route);
 
-            Console.WriteLine("You can reverse the route:");
+
+            Console.WriteLine("Let's reverse the route:");
             route.Reverse();
             Console.WriteLine(route);
 
-            Console.WriteLine($"You can use Enumerator to fetch the segments one by one continuously:");
+
+            Console.WriteLine("You can use Enumerator to fetch the segments one by one continuously:");
             IEnumerator<Segment> routeEnumerator = route.GetEnumerator();
             routeEnumerator.MoveNext();
             Console.WriteLine(routeEnumerator.Current);
@@ -104,7 +114,13 @@ namespace DeliveryRoute
             Console.WriteLine(routeEnumerator.Current);
             routeEnumerator.MoveNext();
             Console.WriteLine(routeEnumerator.Current);
-            Console.WriteLine("or to extract the resulted route as a whole");
+            Console.WriteLine("...");
+            Console.WriteLine("or to extract the resulted route as a whole\n");
+
+
+            Console.WriteLine("Query public properties to get some status information:");
+            Console.WriteLine($"DataAccepted: {route.DataAccepted}");
+            Console.WriteLine($"Arranged: {route.Arranged}");
         }
     }
 }

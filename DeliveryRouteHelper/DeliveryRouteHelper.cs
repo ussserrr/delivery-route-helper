@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+
 namespace DeliveryRouteHelper
 {
+    // Entity representing a single delivery point
+    // IEquatable<> implementation helps to compare the instances throughout the code
     public class Point : IEquatable<Point>
     {
         // coords, visited { get, set }, etc.
@@ -18,7 +21,7 @@ namespace DeliveryRouteHelper
 
         public Point(Point point)
         {
-            Name = String.Copy(Name);
+            Name = string.Copy(point.Name);
         }
 
         public static Point Copy(Point other)
@@ -26,6 +29,7 @@ namespace DeliveryRouteHelper
             return new Point(String.Copy(other.Name));
         }
 
+        // Below are members needed to comply with IEquatable<> interface (auto-generated templates by Visual Studio)
         public override bool Equals(object obj)
         {
             return Equals(obj as Point);
@@ -58,6 +62,9 @@ namespace DeliveryRouteHelper
         }
     }
 
+
+    // Entity representing a directed set of 2 Points
+    // IEquatable<> implementation helps to compare the instances throughout the code
     public class Segment : IEquatable<Segment>
     {
         public Point Start, End;
@@ -81,7 +88,7 @@ namespace DeliveryRouteHelper
 
         public override string ToString()
         {
-            return String.Format("{0} → {1}", Start.Name, End.Name);
+            return string.Format($"{Start.Name} → {End.Name}");
         }
 
         public void Reverse()
@@ -93,10 +100,11 @@ namespace DeliveryRouteHelper
 
         public bool Equals(Segment other)
         {
-            return (other.Start == Start && other.End == End);
+            return other.Start == Start && other.End == End;
         }
     }
 
+    // Custom exceptions should satisfy the following requirements:
     // https://docs.microsoft.com/ru-ru/dotnet/csharp/programming-guide/exceptions/creating-and-throwing-exceptions
     [Serializable()]
     public class InvalidSegmentException : System.Exception
@@ -131,6 +139,9 @@ namespace DeliveryRouteHelper
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
+
+    // Core class of the library accepting, converting and arranging the Segments
+    // IEnumerable<> allows to get delivery points one by one upon request
     public class Route : IEnumerable<Segment>
     {
         public string Name { get; set; }
@@ -149,7 +160,11 @@ namespace DeliveryRouteHelper
             }
         }
 
+        // HashSet<Segment> ideally fits to store the input data as it unsorted by definition.
+        // So it computes some operations faster due to its features
         private HashSet<Segment> segmentsSet;
+        // In opposed, output array is strictly arranged for all of its elements so usage of doubly-linked list
+        // is intuitively clear
         private LinkedList<Segment> route;
 
         public Route(string name)
