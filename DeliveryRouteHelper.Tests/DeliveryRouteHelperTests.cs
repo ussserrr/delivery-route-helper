@@ -52,7 +52,7 @@ namespace DeliveryRouteHelper.Tests
             new string[] { "Ноттинг-Хилл", "Южный Кенсингтон" },
             new string[] { "Детфорд", "Фулем" },
             new string[] { "Гринвич", "Сербитон" },
-            new string[] { "BAD BLOCK" },
+                new string[] { "BAD BLOCK" },
             new string[] { "Челси", "Блумсбери" },
             new string[] { "Южный Кенсингтон", "Челси" },
             new string[] { "Сербитон", "Детфорд" },
@@ -107,6 +107,7 @@ namespace DeliveryRouteHelper.Tests
             var ex = Assert.Throws<DisruptedRouteException>(() => { route.Arrange(); });
             Assert.NotNull(ex);
         }
+
         [Fact]
         public void GotExpectedEmptyInputException()
         {
@@ -115,6 +116,7 @@ namespace DeliveryRouteHelper.Tests
             var ex = Assert.Throws<EmptyInputException>(() => { route.AcceptData(LondonSegments_Incorrect_EmptyInput); });
             Assert.NotNull(ex);
         }
+
         [Fact]
         public void GotExpectedInvalidSegmentException()
         {
@@ -124,21 +126,45 @@ namespace DeliveryRouteHelper.Tests
             Assert.NotNull(ex);
         }
 
-        [Fact]
-        public void ArrangedCorrectly()
+        [Theory]
+        [InlineData(100)]
+        public void ArrangedCorrectly(int numberOfTests)
         {
-            Route route = new Route("LondonRoute_Correct");
-            route.AcceptData(LondonSegments_Correct);
-            route.Arrange();
-
+            Route route = new Route();
             LinkedList<Segment> output = new LinkedList<Segment>();
-            foreach (Segment segment in route)
-            {
-                output.AddLast(new Segment(segment));
-            }
 
-            Assert.True(Enumerable.SequenceEqual(LondonRoute_Correct, output));
+            Random randomGenerator = new Random();
+            string[][] dataArray = LondonSegments_Correct;
+            List<string[]> dataList = new List<string[]>(LondonSegments_Correct);
+
+            for (int testsCounter = 0; testsCounter < numberOfTests; testsCounter++)
+            {
+                // https://stackoverflow.com/questions/273313/randomize-a-listt
+                int n = dataList.Count;
+                while (n > 1)
+                {
+                    n--;
+                    int k = randomGenerator.Next(n + 1);
+                    var value = dataList[k];
+                    dataList[k] = dataList[n];
+                    dataList[n] = value;
+                }
+                dataList.CopyTo(dataArray);
+
+                route.AcceptData(dataArray);
+                route.Arrange();
+                foreach (Segment segment in route)
+                {
+                    output.AddLast(new Segment(segment));
+                }
+
+                Assert.True(Enumerable.SequenceEqual(LondonRoute_Correct, output));
+
+                route.Reset();
+                output.Clear();
+            }
         }
+
         [Fact]
         public void ReversedCorrectly()
         {

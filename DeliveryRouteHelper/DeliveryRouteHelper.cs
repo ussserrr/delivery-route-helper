@@ -201,6 +201,7 @@ namespace DeliveryRouteHelper
                         for (int k = 0; k < 2; k++)
                         {
                             // Convert byte[] into a char[] and then into a string
+                            // https://docs.microsoft.com/ru-ru/dotnet/api/system.text.encoding
                             char[] utf8Chars = new char[Encoding.UTF8.GetCharCount(rawInput[i][k], 0, rawInput[i][k].Length)];
                             Encoding.UTF8.GetChars(rawInput[i][k], 0, rawInput[i][k].Length, utf8Chars, 0);
                             utf8Strings[k] = new string(utf8Chars);
