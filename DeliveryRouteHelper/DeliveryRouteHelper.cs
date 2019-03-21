@@ -98,6 +98,7 @@ namespace DeliveryRouteHelper
             End = tmp;
         }
 
+        // For example for Enumerable.SequenceEqual() (see tests)
         public bool Equals(Segment other)
         {
             return other.Start == Start && other.End == End;
@@ -114,7 +115,7 @@ namespace DeliveryRouteHelper
         public InvalidSegmentException(string message, System.Exception inner) : base(message, inner) { }
 
         // A constructor is needed for serialization when an
-        // exception propagates from a remoting server to the client. 
+        // exception propagates from a remoting server to the client.
         protected InvalidSegmentException(System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }

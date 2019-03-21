@@ -11,9 +11,9 @@ namespace DeliveryRouteHelper.Tests
         [Fact]
         public void IsEquals()
         {
-            Point p1 = new Point("Abc");
-            Point p2 = new Point("Abc");
-            Assert.True(p1 == p2, $"Point '{p1}' should be equal to '{p2}'");
+            Point point1 = new Point("Abc");
+            Point point2 = new Point("Abc");
+            Assert.True(point1 == point2, $"Point '{point1}' should be equal to '{point2}'");
         }
     }
 
@@ -22,11 +22,11 @@ namespace DeliveryRouteHelper.Tests
         [Fact]
         public void ReversedCorrectly()
         {
-            Point p1 = new Point("Abc");
-            Point p2 = new Point("deF");
-            Segment s = new Segment(p1, p2);
-            s.Reverse();
-            Assert.True(s.End == p1 && s.Start == p2, $"Segment {s} isn't reversed");
+            Point point1 = new Point("Abc");
+            Point point2 = new Point("deF");
+            Segment segment = new Segment(point1, point2);
+            segment.Reverse();
+            Assert.True(segment.End == point1 && segment.Start == point2, $"Segment {segment} isn't reversed");
         }
     }
 
