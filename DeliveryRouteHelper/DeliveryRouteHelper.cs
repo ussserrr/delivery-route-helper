@@ -7,7 +7,47 @@ using System.Text;
 
 namespace DeliveryRouteHelper
 {
-    // Entity representing a single delivery point
+    //public class Point<T> : IEquatable<Point<T>> where T : IEquatable<T>
+    //{
+    //    private readonly T identity;
+    //    public Point(T identity)
+    //    {
+    //        this.identity = identity;
+    //    }
+
+    //    public override bool Equals(object obj)
+    //    {
+    //        return Equals(obj as Point<T>);
+    //    }
+
+    //    public bool Equals(Point<T> other)
+    //    {
+    //        return other != null &&
+    //               identity.Equals(other.identity);
+    //    }
+
+    //    public override int GetHashCode()
+    //    {
+    //        return 539060726 + EqualityComparer<T>.Default.GetHashCode(identity);
+    //    }
+
+    //    public static bool operator ==(Point<T> point1, Point<T> point2)
+    //    {
+    //        return EqualityComparer<Point<T>>.Default.Equals(point1, point2);
+    //    }
+
+    //    public static bool operator !=(Point<T> point1, Point<T> point2)
+    //    {
+    //        return !(point1 == point2);
+    //    }
+
+    //    public override string ToString()
+    //    {
+    //        return identity.ToString();
+    //    }
+    //}
+
+        // Entity representing a single delivery point
     // IEquatable<> implementation helps to compare the instances throughout the code
     public class Point : IEquatable<Point>
     {
@@ -29,6 +69,11 @@ namespace DeliveryRouteHelper
             return new Point(String.Copy(other.Name));
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         // Below are members needed to comply with IEquatable<> interface (auto-generated templates by Visual Studio)
         public override bool Equals(object obj)
         {
@@ -44,11 +89,6 @@ namespace DeliveryRouteHelper
         public override int GetHashCode()
         {
             return 539060726 + EqualityComparer<string>.Default.GetHashCode(Name);
-        }
-
-        public override string ToString()
-        {
-            return Name;
         }
 
         public static bool operator ==(Point point1, Point point2)
@@ -101,9 +141,33 @@ namespace DeliveryRouteHelper
         // For example for Enumerable.SequenceEqual() (see tests)
         public bool Equals(Segment other)
         {
-            return other.Start == Start && other.End == End;
+            return other != null && other.Start == Start && other.End == End;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Segment);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -1676728671;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Point>.Default.GetHashCode(Start);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Point>.Default.GetHashCode(End);
+            return hashCode;
+        }
+
+        public static bool operator ==(Segment segment1, Segment segment2)
+        {
+            return EqualityComparer<Segment>.Default.Equals(segment1, segment2);
+        }
+
+        public static bool operator !=(Segment segment1, Segment segment2)
+        {
+            return !(segment1 == segment2);
         }
     }
+
 
     // Custom exceptions should satisfy the following requirements:
     // https://docs.microsoft.com/ru-ru/dotnet/csharp/programming-guide/exceptions/creating-and-throwing-exceptions
@@ -178,64 +242,9 @@ namespace DeliveryRouteHelper
 
         public Route(): this("Unnamed") { }
 
-        public void AcceptData(string[][] rawInput)
+        public void AcceptSegments(HashSet<Segment> segments)
         {
-            if (rawInput.Length != 0)
-            {
-                HashSet<Segment> segmentsSetTmp = new HashSet<Segment>();
-                for (int i = 0; i < rawInput.Length; i++)
-                {
-                    if (rawInput[i].Length == 2)
-                    {
-                        segmentsSetTmp.Add(new Segment(
-                            new Point(rawInput[i][0]),
-                            new Point(rawInput[i][1])));
-                    }
-                    else
-                    {
-                        throw new InvalidSegmentException($"Segment #{i} \"{rawInput[i]}\" is corrupted");
-                    }
-                }
-                segmentsSet = segmentsSetTmp;
-            }
-            else
-            {
-                throw new EmptyInputException($"Input {rawInput.GetType()} is empty");
-            }
-        }
-
-        public void AcceptData(byte[][][] rawInput)
-        {
-            if (rawInput.Length != 0)
-            {
-                HashSet<Segment> segmentsSetTmp = new HashSet<Segment>();
-                for (int i = 0; i < rawInput.Length; i++)
-                {
-                    if (rawInput[i].Length == 2)
-                    {
-                        string[] utf8Strings = new string[2];
-                        for (int k = 0; k < 2; k++)
-                        {
-                            // Convert byte[] into a char[] and then into a string
-                            // https://docs.microsoft.com/ru-ru/dotnet/api/system.text.encoding
-                            char[] utf8Chars = new char[Encoding.UTF8.GetCharCount(rawInput[i][k], 0, rawInput[i][k].Length)];
-                            Encoding.UTF8.GetChars(rawInput[i][k], 0, rawInput[i][k].Length, utf8Chars, 0);
-                            utf8Strings[k] = new string(utf8Chars);
-                        }
-
-                        segmentsSetTmp.Add(new Segment(new Point(utf8Strings[0]), new Point(utf8Strings[1])));
-                    }
-                    else
-                    {
-                        throw new InvalidSegmentException($"Segment #{i} \"{rawInput[i]}\" is corrupted");
-                    }
-                }
-                segmentsSet = segmentsSetTmp;
-            }
-            else
-            {
-                throw new EmptyInputException($"Input {rawInput.GetType()} is empty");
-            }
+            segmentsSet = new HashSet<Segment>(segments);
         }
 
         public void Arrange()
