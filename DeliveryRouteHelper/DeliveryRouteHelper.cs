@@ -7,6 +7,72 @@ using System.Text;
 
 namespace DeliveryRouteHelper
 {
+    namespace Util
+    {
+        public class Util
+        {
+            public static HashSet<Segment> ConvertData(string[][] rawInput)
+            {
+                if (rawInput.Length != 0)
+                {
+                    HashSet<Segment> segmentsSet = new HashSet<Segment>();
+                    for (int i = 0; i < rawInput.Length; i++)
+                    {
+                        if (rawInput[i].Length == 2)
+                        {
+                            segmentsSet.Add(new Segment(
+                                new Point(rawInput[i][0]),
+                                new Point(rawInput[i][1])));
+                        }
+                        else
+                        {
+                            throw new InvalidSegmentException($"Segment #{i} \"{rawInput[i]}\" is corrupted");
+                        }
+                    }
+                    return segmentsSet;
+                }
+                else
+                {
+                    throw new EmptyInputException($"Input {rawInput.GetType()} is empty");
+                }
+            }
+
+            public static HashSet<Segment> ConvertData(byte[][][] rawInput)
+            {
+                if (rawInput.Length != 0)
+                {
+                    HashSet<Segment> segmentsSet = new HashSet<Segment>();
+                    for (int i = 0; i < rawInput.Length; i++)
+                    {
+                        if (rawInput[i].Length == 2)
+                        {
+                            string[] utf8Strings = new string[2];
+                            for (int k = 0; k < 2; k++)
+                            {
+                                // Convert byte[] into a char[] and then into a string
+                                // https://docs.microsoft.com/ru-ru/dotnet/api/system.text.encoding
+                                char[] utf8Chars = new char[Encoding.UTF8.GetCharCount(rawInput[i][k], 0, rawInput[i][k].Length)];
+                                Encoding.UTF8.GetChars(rawInput[i][k], 0, rawInput[i][k].Length, utf8Chars, 0);
+                                utf8Strings[k] = new string(utf8Chars);
+                            }
+
+                            segmentsSet.Add(new Segment(new Point(utf8Strings[0]), new Point(utf8Strings[1])));
+                        }
+                        else
+                        {
+                            throw new InvalidSegmentException($"Segment #{i} \"{rawInput[i]}\" is corrupted");
+                        }
+                    }
+                    return segmentsSet;
+                }
+                else
+                {
+                    throw new EmptyInputException($"Input {rawInput.GetType()} is empty");
+                }
+            }
+        }
+    }
+
     //public class Point<T> : IEquatable<Point<T>> where T : IEquatable<T>
     //{
     //    private readonly T identity;
@@ -47,7 +113,8 @@ namespace DeliveryRouteHelper
     //    }
     //}
 
-        // Entity representing a single delivery point
+
+    // Entity representing a single delivery point
     // IEquatable<> implementation helps to compare the instances throughout the code
     public class Point : IEquatable<Point>
     {

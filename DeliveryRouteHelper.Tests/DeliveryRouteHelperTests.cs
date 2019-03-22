@@ -1,8 +1,11 @@
 using System;
 using System.Linq;
-using Xunit;
-using DeliveryRouteHelper;
 using System.Collections.Generic;
+
+using Xunit;
+
+using DeliveryRouteHelper;
+
 
 namespace DeliveryRouteHelper.Tests
 {
@@ -101,8 +104,9 @@ namespace DeliveryRouteHelper.Tests
         [Fact]
         public void GotExpectedDisruptedRouteException()
         {
+            HashSet<Segment> testData = Util.Util.ConvertData(LondonSegments_Incorrect_Disrupted);
             Route route = new Route("LondonAreas_Incorrect_Disrupted");
-            route.AcceptData(LondonSegments_Incorrect_Disrupted);
+            route.AcceptSegments(testData);
 
             var ex = Assert.Throws<DisruptedRouteException>(() => { route.Arrange(); });
             Assert.NotNull(ex);
@@ -111,18 +115,18 @@ namespace DeliveryRouteHelper.Tests
         [Fact]
         public void GotExpectedEmptyInputException()
         {
-            Route route = new Route("LondonAreas_Incorrect_EmptyInput");
+            //Route route = new Route("LondonAreas_Incorrect_EmptyInput");
 
-            var ex = Assert.Throws<EmptyInputException>(() => { route.AcceptData(LondonSegments_Incorrect_EmptyInput); });
+            var ex = Assert.Throws<EmptyInputException>(() => { Util.Util.ConvertData(LondonSegments_Incorrect_EmptyInput); });
             Assert.NotNull(ex);
         }
 
         [Fact]
         public void GotExpectedInvalidSegmentException()
         {
-            Route route = new Route("LondonAreas_Incorrect_InvalidSegment");
+            //Route route = new Route("LondonAreas_Incorrect_InvalidSegment");
 
-            var ex = Assert.Throws<InvalidSegmentException>(() => { route.AcceptData(LondonSegments_Incorrect_InvalidSegment); });
+            var ex = Assert.Throws<InvalidSegmentException>(() => { Util.Util.ConvertData(LondonSegments_Incorrect_InvalidSegment); });
             Assert.NotNull(ex);
         }
 
@@ -131,7 +135,6 @@ namespace DeliveryRouteHelper.Tests
         public void ArrangedCorrectly(int numberOfTests)
         {
             Route route = new Route();
-            LinkedList<Segment> output = new LinkedList<Segment>();
 
             Random randomGenerator = new Random();
             string[][] dataArray = LondonSegments_Correct;
@@ -150,9 +153,11 @@ namespace DeliveryRouteHelper.Tests
                     dataList[n] = value;
                 }
                 dataList.CopyTo(dataArray);
+                HashSet<Segment> testData = Util.Util.ConvertData(dataArray);
 
-                route.AcceptData(dataArray);
+                route.AcceptSegments(testData);
                 route.Arrange();
+                LinkedList<Segment> output = new LinkedList<Segment>();
                 foreach (Segment segment in route)
                 {
                     output.AddLast(new Segment(segment));
@@ -161,7 +166,7 @@ namespace DeliveryRouteHelper.Tests
                 Assert.True(Enumerable.SequenceEqual(LondonRoute_Correct, output));
 
                 route.Reset();
-                output.Clear();
+                //output.Clear();
             }
         }
 
@@ -169,7 +174,8 @@ namespace DeliveryRouteHelper.Tests
         public void ReversedCorrectly()
         {
             Route route = new Route("LondonRoute_CorrectReversed");
-            route.AcceptData(LondonSegments_Correct);
+            HashSet<Segment> testData = Util.Util.ConvertData(LondonSegments_Correct);
+            route.AcceptSegments(testData);
             route.Arrange();
             route.Reverse();
 
