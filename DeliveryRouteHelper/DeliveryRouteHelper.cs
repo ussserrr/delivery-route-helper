@@ -7,10 +7,21 @@ using System.Text;
 
 namespace DeliveryRouteHelper
 {
+    /// <summary>
+    /// Entity representing a single point of delivery.
+    /// </summary>
+    /// <remarks>
+    /// Generally, exactly this class is responsible for data encapsulatiion and hiding it from Segment
+    /// and Route classes. The details of the implementation are behind the scenes of the concrete
+    /// application so here we use just simple String to identify the Point.
+    /// </remarks>
     public class Point : IEquatable<Point>
     {
-        // coords, visited { get, set }, etc.
+        /// <summary>
+        /// Name of the delivery point.
+        /// </summary>
         public readonly string Name;
+        // Coords, Visited { get, set }, etc.
 
         public Point(string name)
         {
@@ -62,12 +73,23 @@ namespace DeliveryRouteHelper
     }
 
 
-    // Entity representing a directed set of 2 Points.
-    // IEquatable<> implementation helps to compare the instances throughout the code
-    // (for example for Enumerable.SequenceEqual() (see tests))
+    /// <summary>
+    /// Entity representing a directed set of 2 Points.
+    /// </summary>
+    /// <remarks>
+    /// IEquatable implementation helps to compare the instances throughout the code
+    /// (for example for Enumerable.SequenceEqual() (see tests))
+    /// </remarks>
     public class Segment : IEquatable<Segment>
     {
-        public Point Start, End;
+        /// <summary>
+        /// The start Point.
+        /// </summary>
+        public Point Start;
+        /// <summary>
+        /// The end Point.
+        /// </summary>
+        public Point End;
 
         public Segment(Point start, Point end)
         {
@@ -91,6 +113,12 @@ namespace DeliveryRouteHelper
             return string.Format($"{Start.Name} → {End.Name}");
         }
 
+        /// <summary>
+        /// Change the direction of the Segment.
+        /// </summary>
+        /// <remarks>
+        /// Swaps the Start and the End
+        /// </remarks>
         public void Reverse()
         {
             var tmp = Start;
@@ -132,6 +160,13 @@ namespace DeliveryRouteHelper
 
     // Custom exceptions should satisfy the following requirements:
     // https://docs.microsoft.com/ru-ru/dotnet/csharp/programming-guide/exceptions/creating-and-throwing-exceptions
+
+    /// <summary>
+    /// Invalid segment exception.
+    /// </summary>
+    /// <remarks>
+    /// Throw it on input data parsing in case of errors.
+    /// </remarks>
     [Serializable()]
     public class InvalidSegmentException : System.Exception
     {
@@ -144,6 +179,9 @@ namespace DeliveryRouteHelper
         protected InvalidSegmentException(System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    /// <summary>
+    /// Empty input exception.
+    /// </summary>
     [Serializable()]
     public class EmptyInputException : System.Exception
     {
@@ -154,6 +192,12 @@ namespace DeliveryRouteHelper
         protected EmptyInputException(System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    /// <summary>
+    /// Disrupted route exception.
+    /// </summary>
+    /// <remarks>
+    /// Throw it on errors during the segments chaining process.
+    /// </remarks>
     [Serializable()]
     public class DisruptedRouteException : System.Exception
     {
@@ -166,11 +210,24 @@ namespace DeliveryRouteHelper
     }
 
 
-    // Core class of the library accepting, converting and arranging the Segments.
-    // IEnumerable<> allows to get delivery points one by one upon request
+    /// <summary>
+    /// Delivery route manipulations.
+    /// </summary>
+    /// <remarks>
+    /// Core class of the library accepting, converting and arranging the <c><see cref="T:DeliveryRouteHelper.Segment"/></c>s.
+    /// IEnumerable allows to get delivery points one by one upon request.
+    /// </remarks>
     public class Route : IEnumerable<Segment>
     {
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>The name.</value>
         public string Name { get; set; }
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="T:DeliveryRouteHelper.Route"/> data accepted.
+        /// </summary>
+        /// <value><c>true</c> if data accepted; otherwise, <c>false</c>.</value>
         public bool DataAccepted
         {
             get
@@ -178,6 +235,10 @@ namespace DeliveryRouteHelper
                 return segmentsSet.Count != 0;
             }
         }
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="T:DeliveryRouteHelper.Route"/> is arranged.
+        /// </summary>
+        /// <value><c>true</c> if arranged; otherwise, <c>false</c>.</value>
         public bool Arranged
         {
             get
@@ -197,12 +258,16 @@ namespace DeliveryRouteHelper
         public Route(string name)
         {
             Name = name;
-
             route = new LinkedList<Segment>();
             segmentsSet = new HashSet<Segment>();
         }
         public Route() : this("Unnamed") { }
 
+        /// <summary>
+        /// Accepts the segments.
+        /// </summary>
+        /// <param name="segments">Segments.</param>
+        /// <exception cref="EmptyInputException">Empty input data.</exception>
         public void AcceptSegments(HashSet<Segment> segments)
         {
             if (segments.Count == 0)
@@ -212,6 +277,10 @@ namespace DeliveryRouteHelper
             segmentsSet = new HashSet<Segment>(segments);
         }
 
+        /// <summary>
+        /// Arrange this instance.
+        /// </summary>
+        /// <exception cref="DisruptedRouteException">Segments doesn't form a complete chain.</exception>
         public void Arrange()
         {
             // Already arranged segments will be added there piece by piece on every new iteration
@@ -281,6 +350,9 @@ namespace DeliveryRouteHelper
             return tmpOut.ToString();
         }
 
+        /// <summary>
+        /// Display this instance.
+        /// </summary>
         public void Display()
         {
             Console.WriteLine($"Route \"{Name}\":");
@@ -300,6 +372,9 @@ namespace DeliveryRouteHelper
             }
         }
 
+        /// <summary>
+        /// Reset this instance.
+        /// </summary>
         public void Reset()
         {
             Name = "";
@@ -308,6 +383,9 @@ namespace DeliveryRouteHelper
             route.Clear();
         }
 
+        /// <summary>
+        /// Reverse this instance.
+        /// </summary>
         public void Reverse()
         {
             foreach (Segment segment in route)
@@ -333,8 +411,18 @@ namespace DeliveryRouteHelper
 
     namespace Util
     {
+        /// <summary>
+        /// Some utility functions (e.g. data converters) for the library.
+        /// </summary>
         public static class Util
         {
+            /// <summary>
+            /// Converts the data.
+            /// </summary>
+            /// <returns>The data.</returns>
+            /// <param name="rawInput">Raw input.</param>
+            /// <exception cref="InvalidSegmentException">Input data contains invalid segments.</exception>
+            /// <exception cref="EmptyInputException">Empty input data.</exception>
             public static HashSet<Segment> ConvertData(string[][] rawInput)
             {
                 if (rawInput.Length != 0)
@@ -357,6 +445,13 @@ namespace DeliveryRouteHelper
                 throw new EmptyInputException($"Input {rawInput.GetType()} is empty");
             }
 
+            /// <summary>
+            /// Converts the data.
+            /// </summary>
+            /// <returns>The data.</returns>
+            /// <param name="rawInput">Raw input.</param>
+            /// <exception cref="InvalidSegmentException">Input data contains invalid segments.</exception>
+            /// <exception cref="EmptyInputException">Empty input data.</exception>
             public static HashSet<Segment> ConvertData(byte[][][] rawInput)
             {
                 if (rawInput.Length != 0)
