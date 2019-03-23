@@ -12,11 +12,19 @@ namespace DeliveryRouteHelper.Tests
     public class Point_Tests
     {
         [Fact]
-        public void IsEquals()
+        public void AreEqual()
         {
-            Point point1 = new Point("Abc");
-            Point point2 = new Point("Abc");
-            Assert.True(point1 == point2, $"Point '{point1}' should be equal to '{point2}'");
+            Point point1 = new Point("Abc, 42");
+            Point point2 = new Point("Abc, 42");
+            Assert.Equal(point1, point2);
+        }
+
+        [Fact]
+        public void AreNotEqual()
+        {
+            Point point1 = new Point("Abc, 42");
+            Point point2 = new Point("24, xyZ");
+            Assert.NotEqual(point1, point2);
         }
     }
 
@@ -25,11 +33,12 @@ namespace DeliveryRouteHelper.Tests
         [Fact]
         public void ReversedCorrectly()
         {
-            Point point1 = new Point("Abc");
-            Point point2 = new Point("deF");
+            Point point1 = new Point("Abc, 42");
+            Point point2 = new Point("24, xyZ");
             Segment segment = new Segment(point1, point2);
             segment.Reverse();
-            Assert.True(segment.End == point1 && segment.Start == point2, $"Segment {segment} isn't reversed");
+            Assert.Equal(segment.End, point1);
+            Assert.Equal(segment.Start, point2);
         }
     }
 
@@ -52,17 +61,23 @@ namespace DeliveryRouteHelper.Tests
         private readonly string[][] LondonInput_Incorrect_EmptyInput = { };
 
         [Fact]
-        public void GotExpectedEmptyInputException()
+        public void GotExpected_EmptyInputException()
         {
-            var ex = Assert.Throws<EmptyInputException>(() => { Util.Util.ConvertData(LondonInput_Incorrect_EmptyInput); });
-            Assert.NotNull(ex);
+            var exception = Assert.Throws<EmptyInputException>(() =>
+            {
+                Util.Util.ConvertData(LondonInput_Incorrect_EmptyInput);
+            });
+            Assert.NotNull(exception);
         }
 
         [Fact]
-        public void GotExpectedInvalidSegmentException()
+        public void GotExpected_InvalidSegmentException()
         {
-            var ex = Assert.Throws<InvalidSegmentException>(() => { Util.Util.ConvertData(LondonInput_Incorrect_InvalidSegment); });
-            Assert.NotNull(ex);
+            var exception = Assert.Throws<InvalidSegmentException>(() =>
+            {
+                Util.Util.ConvertData(LondonInput_Incorrect_InvalidSegment);
+            });
+            Assert.NotNull(exception);
         }
     }
 
@@ -120,13 +135,13 @@ namespace DeliveryRouteHelper.Tests
         });
 
         [Fact]
-        public void GotExpectedDisruptedRouteException()
+        public void GotExpected_DisruptedRouteException()
         {
-            Route route = new Route("LondonAreas_Incorrect_Disrupted");
+            Route route = new Route();
             route.AcceptSegments(LondonSegments_NonArrangeable_Disrupted);
 
-            var ex = Assert.Throws<DisruptedRouteException>(() => { route.Arrange(); });
-            Assert.NotNull(ex);
+            var exception = Assert.Throws<DisruptedRouteException>(() => { route.Arrange(); });
+            Assert.NotNull(exception);
         }
 
         [Theory]
@@ -140,16 +155,16 @@ namespace DeliveryRouteHelper.Tests
 
             for (int testsCounter = 0; testsCounter < numberOfTests; testsCounter++)
             {
+                // Shuffle the list (Fisher-Yates algorithm)
                 // https://stackoverflow.com/questions/273313/randomize-a-listt
-                int n = segmentsList.Count;
-                while (n > 1)
+                for (int i = segmentsList.Count - 1; i > 1; i--)
                 {
-                    n--;
-                    int k = randomGenerator.Next(n + 1);
+                    int k = randomGenerator.Next(i + 1);
                     var value = segmentsList[k];
-                    segmentsList[k] = segmentsList[n];
-                    segmentsList[n] = value;
+                    segmentsList[k] = segmentsList[i];
+                    segmentsList[i] = value;
                 }
+                //Console.WriteLine(segmentsList[3]);  // to be sure that the list is really has been shuffled
                 HashSet<Segment> segmentsSet = new HashSet<Segment>(segmentsList);
 
                 route.AcceptSegments(segmentsSet);
@@ -163,15 +178,13 @@ namespace DeliveryRouteHelper.Tests
                 Assert.True(Enumerable.SequenceEqual(LondonRoute_Arranged, output));
 
                 route.Reset();
-                //segmentsSet.Clear();
             }
         }
 
         [Fact]
         public void ReversedCorrectly()
         {
-            Route route = new Route("LondonRoute_ArrangedReversed");
-            //HashSet<Segment> testData = Util.Util.ConvertData(LondonSegments_Arrangeable);
+            Route route = new Route();
             route.AcceptSegments(LondonSegments_Arrangeable);
             route.Arrange();
             route.Reverse();
@@ -182,7 +195,7 @@ namespace DeliveryRouteHelper.Tests
                 output.AddLast(new Segment(segment));
             }
 
-            Assert.True(Enumerable.SequenceEqual(LondonRoute_ArrangedReversed, output));
+            Assert.True(Enumerable.SequenceEqual(LondonRoute_ArrangedReversed, output), $"{output}");
         }
     }
 }

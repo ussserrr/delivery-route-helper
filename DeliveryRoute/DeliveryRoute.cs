@@ -10,7 +10,7 @@ using DeliveryRouteHelper.Util;
 
 namespace DeliveryRoute
 {
-    class DeliveryRoute
+    public static class DeliveryRoute
     {
         private static Logger logger;
 
@@ -58,10 +58,10 @@ namespace DeliveryRoute
             try
             {
                 inputData = Util.ConvertData(LondonAreas);
+                logger.Info($"Data {LondonAreas.GetType()} {nameof(LondonAreas)} is converted");
                 route.AcceptSegments(inputData);
-                logger.Info($"Data {LondonAreas.GetType()} {nameof(LondonAreas)} is accepted");
             }
-            catch (InvalidSegmentException ex)
+            catch (Exception ex)
             {
                 logger.Error($"Cannot feed input {LondonAreas.GetType()} {nameof(LondonAreas)}: {ex}");
                 return;
@@ -85,10 +85,10 @@ namespace DeliveryRoute
             try
             {
                 inputData = Util.ConvertData(TokyoWards);
-                route.AcceptSegments(inputData);
                 logger.Info($"Data {TokyoWards.GetType()} {nameof(TokyoWards)} is accepted");
+                route.AcceptSegments(inputData);
             }
-            catch (InvalidSegmentException ex)
+            catch (Exception ex)
             {
                 logger.Error($"Cannot feed input {TokyoWards.GetType()} {nameof(TokyoWards)}: {ex}");
                 return;
