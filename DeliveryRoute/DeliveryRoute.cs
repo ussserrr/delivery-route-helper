@@ -120,12 +120,19 @@ namespace DeliveryRoute
             routeEnumerator.MoveNext();
             Console.WriteLine(routeEnumerator.Current);
             Console.WriteLine("...");
-            Console.WriteLine("or to extract the resulted route as a whole\n");
+            Console.WriteLine("or to extract the resulted route as a whole in a loop\n");
 
 
             Console.WriteLine("Query public properties to get some status information:");
             Console.WriteLine($"DataAccepted: {route.DataAccepted}");
-            Console.WriteLine($"Arranged: {route.Arranged}");
+            Console.WriteLine($"Arranged: {route.Arranged}\n");
+
+            Console.WriteLine("If you want to get the next point itself and not the segment use GetRouteAsPoints() method:");
+            foreach (Point point in route.GetRouteAsPoints())
+            {
+                Console.Write($"{point} → ");
+            }
+            Console.WriteLine("\b\b ");
         }
     }
 }

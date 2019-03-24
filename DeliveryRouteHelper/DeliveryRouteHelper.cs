@@ -11,9 +11,10 @@ namespace DeliveryRouteHelper
     /// Entity representing a single point of delivery.
     /// </summary>
     /// <remarks>
-    /// Generally, exactly this class is responsible for data encapsulatiion and hiding it from Segment
-    /// and Route classes. The details of the implementation are behind the scenes of the concrete
-    /// application so here we use just simple String to identify the Point.
+    /// Generally, exactly this class is responsible for data encapsulatiion and hiding it from the
+    /// <see cref="T:DeliveryRouteHelper.Segment"/> and <see cref="T:DeliveryRouteHelper.Route"/>
+    /// classes. The detailed implementation are behind the scenes of the concrete application so
+    /// here we use just simple <c>string</c> to identify the <c>Point</c>.
     /// </remarks>
     public class Point : IEquatable<Point>
     {
@@ -74,20 +75,20 @@ namespace DeliveryRouteHelper
 
 
     /// <summary>
-    /// Entity representing a directed set of 2 Points.
+    /// Entity representing a directed set of 2 <see cref="T:DeliveryRouteHelper.Point"/>s.
     /// </summary>
     /// <remarks>
-    /// IEquatable implementation helps to compare the instances throughout the code
-    /// (for example for Enumerable.SequenceEqual() (see tests))
+    /// <c>IEquatable</c> implementation helps to compare the instances throughout the code
+    /// (for example for <c>Enumerable.SequenceEqual()</c> (see tests))
     /// </remarks>
     public class Segment : IEquatable<Segment>
     {
         /// <summary>
-        /// The start Point.
+        /// The start <see cref="T:DeliveryRouteHelper.Point"/>s.
         /// </summary>
         public Point Start;
         /// <summary>
-        /// The end Point.
+        /// The end <see cref="T:DeliveryRouteHelper.Point"/>s.
         /// </summary>
         public Point End;
 
@@ -114,10 +115,10 @@ namespace DeliveryRouteHelper
         }
 
         /// <summary>
-        /// Change the direction of the Segment.
+        /// Change the direction of this <c>Segment</c>.
         /// </summary>
         /// <remarks>
-        /// Swaps the Start and the End
+        /// Swaps the <c>Start</c> and the <c>End</c>
         /// </remarks>
         public void Reverse()
         {
@@ -165,7 +166,7 @@ namespace DeliveryRouteHelper
     /// Invalid segment exception.
     /// </summary>
     /// <remarks>
-    /// Throw it on input data parsing in case of errors.
+    /// Throw it on input data parsing errors.
     /// </remarks>
     [Serializable()]
     public class InvalidSegmentException : System.Exception
@@ -214,8 +215,9 @@ namespace DeliveryRouteHelper
     /// Delivery route manipulations.
     /// </summary>
     /// <remarks>
-    /// Core class of the library accepting, converting and arranging the <c><see cref="T:DeliveryRouteHelper.Segment"/></c>s.
-    /// IEnumerable allows to get delivery points one by one upon request.
+    /// Core class of the library accepting, converting and arranging the
+    /// <see cref="T:DeliveryRouteHelper.Segment"/>s.
+    /// <c>IEnumerable</c> allows to get delivery segments one by one upon request.
     /// </remarks>
     public class Route : IEnumerable<Segment>
     {
@@ -264,7 +266,7 @@ namespace DeliveryRouteHelper
         public Route() : this("Unnamed") { }
 
         /// <summary>
-        /// Accepts the segments.
+        /// Accepts the <see cref="T:DeliveryRouteHelper.Segment"/>s.
         /// </summary>
         /// <param name="segments">Segments.</param>
         /// <exception cref="EmptyInputException">Empty input data.</exception>
@@ -280,7 +282,7 @@ namespace DeliveryRouteHelper
         /// <summary>
         /// Arrange this instance.
         /// </summary>
-        /// <exception cref="DisruptedRouteException">Segments doesn't form a complete chain.</exception>
+        /// <exception cref="DisruptedRouteException"><see cref="T:DeliveryRouteHelper.Segment"/>s doesn't form a complete chain.</exception>
         public void Arrange()
         {
             // Already arranged segments will be added there piece by piece on every new iteration
@@ -370,6 +372,20 @@ namespace DeliveryRouteHelper
             {
                 Console.WriteLine("empty");
             }
+        }
+
+        /// <summary>
+        /// Gets the route as points.
+        /// </summary>
+        /// <returns>Iterable.</returns>
+        public IEnumerable<Point> GetRouteAsPoints()
+        {
+            IEnumerator<Segment> routeEnumerator = GetEnumerator();
+            while (routeEnumerator.MoveNext())
+            {
+                yield return routeEnumerator.Current.Start;
+            }
+            yield return routeEnumerator.Current.End;
         }
 
         /// <summary>

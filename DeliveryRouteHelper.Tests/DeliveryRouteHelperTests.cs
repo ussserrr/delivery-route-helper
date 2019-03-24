@@ -133,6 +133,20 @@ namespace DeliveryRouteHelper.Tests
             new Segment(new Point("Теддингтон"), new Point("Вестминстер")),
             new Segment(new Point("Вестминстер"), new Point("Сити")),
         });
+        private readonly LinkedList<Point> LondonRouteAsPoints_Correct = new LinkedList<Point>(new Point[]
+        {
+            new Point("Сити"),
+            new Point("Вестминстер"),
+            new Point("Теддингтон"),
+            new Point("Ноттинг-Хилл"),
+            new Point("Южный Кенсингтон"),
+            new Point("Челси"),
+            new Point("Блумсбери"),
+            new Point("Гринвич"),
+            new Point("Сербитон"),
+            new Point("Детфорд"),
+            new Point("Фулем")
+        });
 
         [Fact]
         public void GotExpected_DisruptedRouteException()
@@ -196,6 +210,24 @@ namespace DeliveryRouteHelper.Tests
             }
 
             Assert.True(Enumerable.SequenceEqual(LondonRoute_ArrangedReversed, output), $"{output}");
+        }
+
+        [Fact]
+        public void GetRouteAsPointsCorrectly()
+        {
+            Route route = new Route();
+            route.AcceptSegments(LondonSegments_Arrangeable);
+            route.Arrange();
+
+            IEnumerator<Point> outputEnumerator = route.GetRouteAsPoints().GetEnumerator();
+            IEnumerator<Point> correctEnumerator = LondonRouteAsPoints_Correct.GetEnumerator();
+
+            while (correctEnumerator.MoveNext())
+            {
+                Assert.True(outputEnumerator.MoveNext(), "Correct output isn't over but the tested Route is over");
+                Assert.Equal(correctEnumerator.Current, outputEnumerator.Current);
+            }
+            Assert.False(outputEnumerator.MoveNext(), "Correct output is over but the tested Route still producing values");
         }
     }
 }
