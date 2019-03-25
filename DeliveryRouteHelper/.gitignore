@@ -8,3 +8,11 @@
 /**/obj/
 _site
 log.txt
+index.md
+toc.yml
+docfx.json
+/src
+/images
+/articles
+/apidoc
+/api
