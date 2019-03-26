@@ -59,10 +59,10 @@ Dependencies:
 ## Build & Run
 
 ### Windows, macOS
-Use Visual Studio as all-in-one solution to build, run, test and generate docs.
+Use Visual Studio as all-in-one solution to build, run, test and generate docs (make sure you have NuGet, dotnet, .NET Core Build Tools installed).
 
 ### Linux
 Configuration was tested on Ubuntu 18.10 under `dotnet` CLI. Prerequisites:
 
  - .NET Core 2 - refer to official Microsoft documentation to add custom package sources and install `dotnet` from `apt`
- - Mono 5 - also refer to official Mono documentation to add custom package sources and install latest complete Mono framework (include MSBuild)
+ - Mono 5 - also refer to official Mono documentation to add custom package sources and install latest complete Mono framework (including MSBuild)
